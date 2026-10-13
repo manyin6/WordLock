@@ -4,6 +4,15 @@
 
 离线背单词与手机专注工具，原生 Java Android 应用。当前版本 **0.6.5**，Logo 使用 **C · W 锁**。
 
+## 界面参考图
+
+> 以下为界面设计参考图（效果示意），实际界面以安装后的版本为准。
+
+<p align="center">
+  <img src="docs/screenshot-plan-lock-now.png" width="45%" alt="计划页：今日数据与立即锁机">
+  <img src="docs/screenshot-plan-auto-lock.png" width="45%" alt="计划页：每日自动锁机与最近 7 天">
+</p>
+
 ## 功能
 
 - 自主设置锁机时长，白名单放行电话及选定应用。
