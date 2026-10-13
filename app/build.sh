@@ -6,12 +6,12 @@ SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
 : "${SDK:?Set ANDROID_SDK_ROOT to your Android SDK directory}"
 BT="$SDK/build-tools/${BUILD_TOOLS_VERSION:-34.0.0}"
 AJ="$SDK/platforms/android-34/android.jar"
-VERSION=0.6.4
+VERSION=0.6.5
 rm -rf build
 mkdir -p build/gen build/classes build/dex
 "$BT/aapt2" compile --dir res -o build/res.zip
 "$BT/aapt2" link -o build/base.apk -I "$AJ" --manifest AndroidManifest.xml -A assets --java build/gen build/res.zip \
- --min-sdk-version 26 --target-sdk-version 34 --version-code 12 --version-name "$VERSION"
+ --min-sdk-version 26 --target-sdk-version 34 --version-code 13 --version-name "$VERSION"
 find src build/gen -name '*.java' > build/sources.txt
 javac -encoding UTF-8 -source 8 -target 8 -bootclasspath "$AJ:$BT/core-lambda-stubs.jar" -d build/classes @build/sources.txt
 find build/classes -name '*.class' > build/classes.txt
