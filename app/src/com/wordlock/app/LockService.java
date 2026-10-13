@@ -85,7 +85,7 @@ public class LockService extends Service {
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int id) {
-        long end = Prefs.lockEnd(this), now = System.currentTimeMillis();
+        long end = Prefs.lockEnd(this), now = Clock.now(this);
         if (end <= now) {
             Prefs.clearLock(this); stopForeground(STOP_FOREGROUND_REMOVE); stopSelf(); return START_NOT_STICKY;
         }
@@ -97,7 +97,7 @@ public class LockService extends Service {
 
     final Runnable tick = new Runnable() {
         @Override public void run() {
-            long end = Prefs.lockEnd(LockService.this), remain = end - System.currentTimeMillis();
+            long end = Prefs.lockEnd(LockService.this), remain = end - Clock.now(LockService.this);
             if (remain <= 0) { finishLock(false); return; }
             String t = fmtRemain(remain);
             countdown.setText(t);
@@ -119,9 +119,22 @@ public class LockService extends Service {
         return p.equals(getPackageName()) || p.equals("com.android.systemui") || p.equals("android") || imes.contains(p);
     }
 
+    final java.util.HashMap<String, Boolean> sysApp = new java.util.HashMap<>();
+
+    /** preinstalled system app only, so a third-party package named like "alarm" or "clock" is not exempt */
+    boolean isSystem(String p) {
+        Boolean v = sysApp.get(p);
+        if (v == null) {
+            try { v = (getPackageManager().getApplicationInfo(p, 0).flags & (android.content.pm.ApplicationInfo.FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0; }
+            catch (Exception e) { v = false; }
+            sysApp.put(p, v);
+        }
+        return v;
+    }
+
     boolean emergency(String p) {
-        return (!dialer.isEmpty() && p.equals(dialer)) || p.contains("incallui") || p.contains("telecom")
-                || p.contains("deskclock") || p.contains(".clock") || p.contains("alarm");
+        if (!dialer.isEmpty() && p.equals(dialer)) return true;
+        return ExemptNames.named(p) && isSystem(p);
     }
 
     boolean allowed(String p) { return inCall || emergency(p) || Prefs.whitelist(this).contains(p); }
@@ -132,7 +145,7 @@ public class LockService extends Service {
         lastFg = pkg;
         if (fullShown) { if (changed && emergency(pkg)) enterBubble(0); }
         else {
-            if (System.currentTimeMillis() < graceUntil) return;
+            if (Clock.now(this) < graceUntil) return;
             if (!allowed(pkg)) showFull();
         }
     }
@@ -292,7 +305,7 @@ public class LockService extends Service {
 
     void hideFull() { if (fullShown) { try { wm.removeView(full); } catch (Exception e) { } fullShown = false; } }
 
-    void enterBubble(long grace) { hideFull(); graceUntil = System.currentTimeMillis() + grace; showBubble(); }
+    void enterBubble(long grace) { hideFull(); graceUntil = Clock.now(this) + grace; showBubble(); }
 
     void showBubble() {
         if (bubble == null) {

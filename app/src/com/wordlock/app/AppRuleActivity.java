@@ -173,7 +173,7 @@ public class AppRuleActivity extends Activity {
     boolean running() { return orig != null && orig.until > 0 && !AppLock.expired(orig); }
 
     long previewEnd() {
-        long t = AppLock.termEnd(running() ? orig.created : System.currentTimeMillis(), r.term);
+        long t = AppLock.termEnd(running() ? orig.created : Clock.now(this), r.term);
         return running() && AppLock.committed(orig) ? Math.max(t, orig.until) : t;
     }
 
@@ -192,7 +192,7 @@ public class AppRuleActivity extends Activity {
                 if (r.until < orig.until) r.until = orig.until;
                 if (AppLock.loosened(orig, r) != null) { r = orig.copy(); render(); refuse(); return; }
             }
-        } else { long now = System.currentTimeMillis(); r.created = now; r.until = AppLock.termEnd(now, r.term); r.on = true; }
+        } else { long now = Clock.now(this); r.created = now; r.until = AppLock.termEnd(now, r.term); r.on = true; }
         AppLock.put(this, r, oldPkg == null ? r.pkg : oldPkg);
         finish();
     }

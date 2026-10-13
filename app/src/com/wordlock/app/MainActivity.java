@@ -530,7 +530,7 @@ public class MainActivity extends Activity {
 
         section(page, "关于");
         LinearLayout c5 = card(page);
-        TextView ab = U.tv(this, "单词锁 v0.6.4 · MIT 开源版\n词库 ECDICT（MIT）· 例句 Tatoeba（CC BY 2.0 FR）· 图片 Noto Emoji（Apache 2.0）", 12, U.SUB, false);
+        TextView ab = U.tv(this, "单词锁 v0.6.5 · MIT 开源版\n词库 ECDICT（MIT）· 例句 Tatoeba（CC BY 2.0 FR）· 图片 Noto Emoji（Apache 2.0）", 12, U.SUB, false);
         ab.setLineSpacing(0, 1.3f); c5.addView(ab);
     }
 

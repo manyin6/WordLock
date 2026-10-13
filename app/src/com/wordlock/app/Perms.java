@@ -110,7 +110,7 @@ public class Perms {
         boolean granted = accOn(a), connected = GuardService.inst != null;
         String message = "手机：" + Build.MANUFACTURER + " " + Build.MODEL
                 + "\n系统：Android " + Build.VERSION.RELEASE + "（API " + Build.VERSION.SDK_INT + "）"
-                + "\n应用：0.6.4"
+                + "\n应用：0.6.5"
                 + "\n系统授权：" + (granted ? "已检测到" : "未检测到")
                 + "\n服务连接：" + (connected ? "已连接" : "尚未连接")
                 + "\n\n" + (connected ? "服务已连接。如引导状态刚发生变化，请返回后稍等片刻。"

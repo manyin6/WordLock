@@ -67,8 +67,9 @@ public class AppLock {
     static void remove(Context c, String pkg) { List<Rule> rs = rules(c); for (int i = rs.size() - 1; i >= 0; i--) if (rs.get(i).pkg.equals(pkg)) rs.remove(i); save(c, rs); }
 
     // ---------- usage ----------
-    static long dayStart() {
-        Calendar c = Calendar.getInstance(); c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0); c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0);
+    static long dayStart() { return dayStart(Clock.now()); }
+    static long dayStart(long t) {
+        Calendar c = Calendar.getInstance(); c.setTimeInMillis(t); c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0); c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0);
         return c.getTimeInMillis();
     }
 
@@ -76,11 +77,12 @@ public class AppLock {
 
     /** foreground milliseconds per package since midnight, from system usage events */
     static synchronized Map<String, Long> usageToday(Context c) {
-        long now = System.currentTimeMillis();
-        if (cache != null && now - cacheAt < 5000) return cache;
+        long tick = android.os.SystemClock.elapsedRealtime();
+        if (cache != null && tick - cacheAt < 5000) return cache;
+        long trusted = Clock.now(c), now = Math.max(System.currentTimeMillis(), trusted);
         HashMap<String, Long> total = new HashMap<>(), open = new HashMap<>();
         try {
-            UsageEvents ev = c.getSystemService(UsageStatsManager.class).queryEvents(dayStart(), now);
+            UsageEvents ev = c.getSystemService(UsageStatsManager.class).queryEvents(dayStart(trusted), now);
             UsageEvents.Event e = new UsageEvents.Event();
             while (ev.hasNextEvent()) {
                 ev.getNextEvent(e);
@@ -91,7 +93,7 @@ public class AppLock {
             }
             for (Map.Entry<String, Long> o : open.entrySet()) add(total, o.getKey(), Math.min(now - o.getValue(), 6 * 3600000L));
         } catch (Exception ex) { }
-        cache = total; cacheAt = now; return total;
+        cache = total; cacheAt = tick; return total;
     }
 
     static void add(Map<String, Long> m, String k, long v) { if (v > 0) m.put(k, (m.containsKey(k) ? m.get(k) : 0L) + v); }
@@ -109,9 +111,9 @@ public class AppLock {
 
     // ---------- term & commitment (disclosed in 用户协议与隐私政策) ----------
     static final long GRACE = 60000L;
-    static boolean expired(Rule r) { return r.until > 0 && System.currentTimeMillis() >= r.until; }
+    static boolean expired(Rule r) { return r.until > 0 && Clock.now() >= r.until; }
     /** after a 1-minute grace period a running rule can no longer be paused, deleted or loosened until its term ends */
-    static boolean committed(Rule r) { long now = System.currentTimeMillis(); return r.until > 0 && now >= r.created + GRACE && now < r.until; }
+    static boolean committed(Rule r) { long now = Clock.now(); return r.until > 0 && now >= r.created + GRACE && now < r.until; }
     static long termEnd(long start, int termDays) {
         Calendar c = Calendar.getInstance(); c.setTimeInMillis(start);
         c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0); c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0);
@@ -119,7 +121,7 @@ public class AppLock {
     }
     static String termLeft(Rule r) {
         if (r.until == 0) return "";
-        long now = System.currentTimeMillis(), left = r.until - now;
+        long now = Clock.now(), left = r.until - now;
         if (left <= 0) return "已结束";
         if (r.until <= termEnd(now, 1)) return "今天结束";
         return "剩 " + (int) Math.ceil(left / 86400000.0) + " 天";
