@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">单词锁</string>
+    <string name="acc_desc">单词锁用它判断当前打开的是哪个应用：锁机时把你带回背单词界面，应用锁到时间后拦下被限制的应用。不读取屏幕内容，不收集任何数据。</string>
+</resources>

@@ -1,0 +1,7 @@
+Examples and translations: Tatoeba contributors, https://tatoeba.org/ .
+License: Creative Commons Attribution 2.0 France (CC BY 2.0 FR).
+License URL: https://creativecommons.org/licenses/by/2.0/fr/
+Individual source pages and contributor credits: see Tatoeba-SOURCES.tsv.
+Changes: selected examples, converted Chinese to simplified Chinese, and
+reformatted as TSV; some separator characters were replaced.
+These materials are not relicensed under WordLock's MIT License.
