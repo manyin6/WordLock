@@ -2,7 +2,7 @@
 
 ![WordLock Logo](docs/logo.png)
 
-离线背单词与手机专注工具，原生 Java Android 应用。当前版本 **0.6.4**，Logo 使用 **C · W 锁**。
+离线背单词与手机专注工具，原生 Java Android 应用。当前版本 **0.6.5**，Logo 使用 **C · W 锁**。
 
 ## 功能
 
@@ -12,6 +12,12 @@
 - 应用限时、锁机计划和专注统计。
 - 本地 SQLite 存储，无账号、无广告 SDK；应用未声明网络权限。
 - 朗读调用系统 TTS 引擎，其联网行为取决于所选引擎。
+
+## 下载
+
+前往 [Releases](https://github.com/manyin6/WordLock/releases/latest) 下载最新 APK。
+
+> **0.6.5 更换了发布签名。** 已安装 0.6.4 及更早版本的用户，需要先卸载旧版再安装，卸载会清除本机学习记录与设置。之后的版本可直接覆盖更新。
 
 ## 源码位置
 
@@ -31,7 +37,7 @@ export ANDROID_SDK_ROOT=/path/to/android-sdk
 bash app/build.sh
 ```
 
-默认输出 `app/build/WordLock-v0.6.4-debug.apk`，使用本机构建目录自动生成的调试密钥。
+默认输出 `app/build/WordLock-v0.6.5-debug.apk`，使用本机构建目录自动生成的调试密钥。
 **仓库不包含原作者发布签名或密码。调试包不能覆盖已安装的原作者正式版。**
 
 正式签名时设置 `WL_KEYSTORE`（密钥路径）、`WL_KEY_ALIAS`、`WL_STORE_PASS` 和 `WL_KEY_PASS` 环境变量，再运行同一脚本。不要将密钥或密码提交到仓库。
@@ -42,11 +48,19 @@ bash app/build.sh
 无障碍服务不读取窗口内容。锁机及应用规则可能限制设备使用，请先用短时长测试；需要停止时可撤回系统权限、清除应用数据或卸载。
 本项目不是安全边界，不保证厂商系统下始终有效，也未宣称已通过应用市场审核。
 
+## 安全
+
+发现安全问题请参阅 [SECURITY.md](SECURITY.md)，不要在公开 Issue 中披露细节。
+
 ## 开源协议
 
 原创代码、界面及原创 Logo 使用 **MIT License**：允许商业使用、修改、分发和售卖，但必须保留版权声明及 MIT 许可文本。无需强制公开修改源码，也不要求界面显眼署名。
 第三方题库、例句和配图遵守各自协议，详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 使用本项目名称或 Logo 不代表获得官方背书。源码含当前版本公开客服联系方式，衍生版本请替换为自己的联系方式。
+
+## 时间与防绕过
+
+锁机和应用规则按开机后经过的时间计算，修改系统时间不会提前结束锁机。手机重启后会重新以系统时间为准，建议开启「自动设置时间」。
 
 ## 无障碍反馈排查
 
@@ -60,4 +74,6 @@ bash app/build.sh
 mkdir -p /tmp/wordlock-tests
 javac -d /tmp/wordlock-tests app/src/com/wordlock/app/AccessibilityComponents.java tests/AccessibilityComponentsTest.java
 java -cp /tmp/wordlock-tests com.wordlock.app.AccessibilityComponentsTest
+javac -d /tmp/wordlock-tests app/src/com/wordlock/app/ExemptNames.java tests/ExemptNamesTest.java
+java -cp /tmp/wordlock-tests com.wordlock.app.ExemptNamesTest
 ```
