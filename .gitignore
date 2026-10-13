@@ -1,0 +1,12 @@
+app/build/
+*.jks
+*.keystore
+*.p12
+*.pem
+*.apk
+*.idsig
+.env
+.env.*
+local.properties
+*.log
+.DS_Store
